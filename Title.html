@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>ConvoManage | Online Conference Management</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<header>
+    <h1>ConvoManage</h1>
+    <p>Streamlining Online Conference Management</p>
+</header>
+
+<nav>
+    <button onclick="showSection('register')">Register Attendee</button>
+    <button onclick="showSection('speaker')">Add Speaker</button>
+    <button onclick="showSection('session')">Create Session</button>
+    <button onclick="showSection('dashboard')">Dashboard</button>
+</nav>
+
+<!-- Attendee Registration -->
+<section id="register" class="card">
+    <h2>Attendee Registration</h2>
+    <input type="text" id="attendeeName" placeholder="Full Name">
+    <input type="email" id="attendeeEmail" placeholder="Email">
+    <button onclick="registerAttendee()">Register</button>
+</section>
+
+<!-- Speaker Management -->
+<section id="speaker" class="card hidden">
+    <h2>Speaker Management</h2>
+    <input type="text" id="speakerName" placeholder="Speaker Name">
+    <input type="text" id="speakerTopic" placeholder="Topic">
+    <button onclick="addSpeaker()">Add Speaker</button>
+</section>
+
+<!-- Session Scheduling -->
+<section id="session" class="card hidden">
+    <h2>Session Scheduling</h2>
+    <input type="text" id="sessionTitle" placeholder="Session Title">
+    <input type="time" id="sessionTime">
+    <button onclick="addSession()">Create Session</button>
+</section>
+
+<!-- Dashboard -->
+<section id="dashboard" class="card hidden">
+    <h2>Conference Dashboard</h2>
+
+    <h3>Attendees</h3>
+    <ul id="attendeeList"></ul>
+
+    <h3>Speakers</h3>
+    <ul id="speakerList"></ul>
+
+    <h3>Sessions</h3>
+    <ul id="sessionList"></ul>
+</section>
+
+<footer>
+    <p>© 2026 ConvoManage | Final Year Project</p>
+</footer>
+
+<script src="script.js"></script>
+</body>
+</html>
