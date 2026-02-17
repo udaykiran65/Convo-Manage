@@ -1,6 +1,8 @@
 let attendees = [];
 let speakers = [];
 let sessions = [];
+let profiles = [];
+let editingProfileId = null;
 
 function showSection(sectionId) {
     document.querySelectorAll('.card').forEach(card => {
@@ -20,6 +22,11 @@ function registerAttendee() {
         document.getElementById("attendeeEmail").value = "";
         updateDashboard();
     }
+}
+
+// Backwards-compatible wrapper for HTML button (older markup uses addRegister)
+function addRegister() {
+    registerAttendee();
 }
 
 function addSpeaker() {
@@ -44,9 +51,97 @@ function addSession() {
         alert("Session Created!");
         document.getElementById("sessionTitle").value = "";
         document.getElementById("sessionTime").value = "";
-        updateDashboard();
+       updateDashboard();
     }
 }
+
+// Profiles: save/load from localStorage
+function loadProfiles() {
+    const raw = localStorage.getItem('profiles');
+    if (raw) {
+        try { profiles = JSON.parse(raw); } catch (e) { profiles = []; }
+    }
+    renderProfiles();
+}
+
+function saveProfiles() {
+    localStorage.setItem('profiles', JSON.stringify(profiles));
+}
+
+function addProfile() {
+    const name = document.getElementById('profileName').value.trim();
+    const role = document.getElementById('profileRole').value.trim();
+    const bio = document.getElementById('profileBio').value.trim();
+    const avatar = document.getElementById('profileAvatar').value.trim();
+
+    if (!name) { alert('Please provide a name for the profile.'); return; }
+
+    if (editingProfileId) {
+        const idx = profiles.findIndex(p => p.id === editingProfileId);
+        if (idx !== -1) {
+            profiles[idx] = { id: editingProfileId, name, role, bio, avatar };
+        }
+        editingProfileId = null;
+        document.getElementById('profileAddBtn').textContent = 'Add Profile';
+    } else {
+        profiles.push({ id: Date.now().toString(), name, role, bio, avatar });
+    }
+
+    saveProfiles();
+    renderProfiles();
+    document.getElementById('profileName').value = '';
+    document.getElementById('profileRole').value = '';
+    document.getElementById('profileBio').value = '';
+    document.getElementById('profileAvatar').value = '';
+}
+
+function renderProfiles() {
+    const list = document.getElementById('profileList');
+    if (!list) return;
+    list.innerHTML = '';
+    profiles.forEach(p => {
+        const li = document.createElement('li');
+        li.className = 'profile-item';
+        const avatarHtml = p.avatar ? `<img src="${p.avatar}" class="profile-avatar" alt="avatar">` : '';
+        li.innerHTML = `${avatarHtml}<strong>${p.name}</strong> <em>${p.role || ''}</em><p>${p.bio || ''}</p>`;
+
+        const editBtn = document.createElement('button');
+        editBtn.textContent = 'Edit';
+        editBtn.onclick = () => editProfile(p.id);
+        const delBtn = document.createElement('button');
+        delBtn.textContent = 'Delete';
+        delBtn.onclick = () => deleteProfile(p.id);
+
+        const btnWrap = document.createElement('div');
+        btnWrap.className = 'profile-buttons';
+        btnWrap.appendChild(editBtn);
+        btnWrap.appendChild(delBtn);
+        li.appendChild(btnWrap);
+
+        list.appendChild(li);
+    });
+}
+
+function editProfile(id) {
+    const p = profiles.find(x => x.id === id);
+    if (!p) return;
+    document.getElementById('profileName').value = p.name;
+    document.getElementById('profileRole').value = p.role || '';
+    document.getElementById('profileBio').value = p.bio || '';
+    document.getElementById('profileAvatar').value = p.avatar || '';
+    editingProfileId = id;
+    document.getElementById('profileAddBtn').textContent = 'Save Changes';
+}
+
+function deleteProfile(id) {
+    if (!confirm('Delete this profile?')) return;
+    profiles = profiles.filter(p => p.id !== id);
+    saveProfiles();
+    renderProfiles();
+}
+
+// initialize profiles on load
+loadProfiles();
 
 function updateDashboard() {
     const attendeeList = document.getElementById("attendeeList");
@@ -69,3 +164,27 @@ function updateDashboard() {
         sessionList.innerHTML += `<li>${s.title} at ${s.time}</li>`;
     });
 }
+
+/* Animated heading: simple typewriter effect */
+function animateHeading(opts) {
+    const el = document.getElementById('mainHeading');
+    if (!el) return;
+    const text = el.getAttribute('data-text') || el.textContent || '';
+    const speed = (opts && opts.speed) || 90;
+    el.textContent = '';
+    el.classList.add('caret');
+    let i = 0;
+    const t = setInterval(() => {
+        el.textContent += text.charAt(i);
+        i++;
+        if (i >= text.length) {
+            clearInterval(t);
+            // keep caret blinking (handled by CSS)
+        }
+    }, speed);
+}
+
+// Start the heading animation after window loads
+window.addEventListener('load', () => {
+    animateHeading({ speed: 90 });
+});

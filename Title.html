@@ -1,19 +1,20 @@
-<!DOCTYPE html>
+<!DOCTYPE html> 
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <title>ConvoManage | Online Conference Management</title>
-    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="Style.css"> 
 </head>
 <body>
 
-<header>
-    <h1>ConvoManage</h1>
-    <p>Streamlining Online Conference Management</p>
+
+    <header>
+ <h1 id="mainHeading" class="animated-heading rainbow-text" data-text="Convo Manage" style="font: size 400;"></h1>
+        <p style="font-size:120%;"><i>Streamlining Online Conference Management</i></p>
 </header>
 
 <nav>
-    <button onclick="showSection('register')">Register Attendee</button>
+    <button onclick="showSection('register')">Register</button>
     <button onclick="showSection('speaker')">Add Speaker</button>
     <button onclick="showSection('session')">Create Session</button>
     <button onclick="showSection('dashboard')">Dashboard</button>
@@ -21,10 +22,11 @@
 
 <!-- Attendee Registration -->
 <section id="register" class="card">
-    <h2>Attendee Registration</h2>
+    <h2 style="font-size:120%;">Registration</h2>
     <input type="text" id="attendeeName" placeholder="Full Name">
     <input type="email" id="attendeeEmail" placeholder="Email">
-    <button onclick="registerAttendee()">Register</button>
+    <button onclick="addRegister()">Register</button>
+    <div id="registerMsg" class="info" aria-live="polite" style="margin-top:8px;color:green;font-size:90%;"></div>
 </section>
 
 <!-- Speaker Management -->
@@ -35,12 +37,27 @@
     <button onclick="addSpeaker()">Add Speaker</button>
 </section>
 
+
+
 <!-- Session Scheduling -->
 <section id="session" class="card hidden">
     <h2>Session Scheduling</h2>
     <input type="text" id="sessionTitle" placeholder="Session Title">
     <input type="time" id="sessionTime">
     <button onclick="addSession()">Create Session</button>
+</section>
+
+<!-- Profiles -->
+<section id="profiles" class="card hidden">
+    <h2>Profiles</h2>
+    <input type="text" id="profileName" placeholder="Name">
+    <input type="text" id="profileRole" placeholder="Role">
+    <textarea id="profileBio" placeholder="Short bio"></textarea>
+    <input type="text" id="profileAvatar" placeholder="Avatar URL (optional)">
+    <button id="profileAddBtn" onclick="addProfile()">Add Profile</button>
+
+    <h3>Saved Profiles</h3>
+    <ul id="profileList"></ul>
 </section>
 
 <!-- Dashboard -->
@@ -50,17 +67,64 @@
     <h3>Attendees</h3>
     <ul id="attendeeList"></ul>
 
-    <h3>Speakers</h3>
+    <h3>Speakers</h3> 
     <ul id="speakerList"></ul>
 
     <h3>Sessions</h3>
     <ul id="sessionList"></ul>
 </section>
 
+
 <footer>
-    <p>© 2026 ConvoManage | Final Year Project</p>
+    <p>© 2026 ConvoManage</p>
 </footer>
 
-<script src="script.js"></script>
+<script src="Script.js"></script>
+<script>
+// Simple localStorage helpers for Title.html
+function saveToStorage() {
+    const key = document.getElementById('storageKey').value.trim();
+    const value = document.getElementById('storageValue').value;
+    const msg = document.getElementById('storageMsg');
+    if (!key) { msg.textContent = 'Please provide a storage key.'; msg.style.color = 'red'; return; }
+    try {
+        localStorage.setItem(key, value);
+        msg.textContent = `Saved key "${key}".`;
+        msg.style.color = 'green';
+    } catch (e) {
+        msg.textContent = 'Save failed: ' + e.message;
+        msg.style.color = 'red';
+    }
+}
+
+function loadFromStorage() {
+    const key = document.getElementById('storageKey').value.trim();
+    const valueEl = document.getElementById('storageValue');
+    const msg = document.getElementById('storageMsg');
+    if (!key) { msg.textContent = 'Please provide a storage key.'; msg.style.color = 'red'; return; 
+
+    }
+    const val = localStorage.getItem(key);
+    if (val === null) {
+        msg.textContent = `No value found for key "${key}".`;
+        msg.style.color = 'orange';
+        valueEl.value = '';
+    } else {
+        valueEl.value = val;
+        msg.textContent = `Loaded value for "${key}".`;
+        msg.style.color = 'green';
+    }
+}
+
+
+function clearStorage() {
+    const key = document.getElementById('storageKey').value.trim();
+    const msg = document.getElementById('storageMsg');
+    if (!key) { msg.textContent = 'Please provide a storage key.'; msg.style.color = 'red'; return; }
+    localStorage.removeItem(key);
+    msg.textContent = `Cleared key "${key}".`;
+    msg.style.color = 'green';
+}
+</script>
 </body>
 </html>
